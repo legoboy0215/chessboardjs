@@ -675,6 +675,7 @@
     var draggedPiece = null
     var draggedPieceLocation = null
     var draggedPieceSource = null
+    var clickMove = false
     var isDragging = false
     var sparePiecesElsIds = {}
     var squareElsIds = {}
@@ -1356,6 +1357,15 @@
     }
 
     function stopDraggedPiece (location) {
+      
+      if (clickMove === false) {
+        if (location === draggedPieceSource) {
+            clickMove = true
+            return
+        }
+      }
+      clickMove = false
+      
       // determine what the action should be
       var action = 'drop'
       if (location === 'offboard' && config.dropOffBoard === 'snapback') {
@@ -1404,6 +1414,17 @@
           )
         if (result === 'snapback' || result === 'trash') {
           action = result
+        }
+      }else{
+        // source piece is a spare piece and position is off the board
+        if (draggedPieceSource === 'spare' && location === 'offboard') {
+           if (clickMove === false) {
+               // pick up spare piece and put it down on next clicked square
+               clickMove = true
+               return;
+            } else {
+                clickMove = false
+            }
         }
       }
 
